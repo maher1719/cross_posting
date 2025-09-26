@@ -1,0 +1,25 @@
+# backend/Dockerfile
+
+# 1. Use an official Python slim image for a smaller size
+FROM python:3.11-slim
+
+# 2. Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# 3. Set environment variables for Python
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# 4. Install system dependencies (if any)
+# RUN apt-get update && apt-get install -y some-package
+
+# 5. Copy requirements file and install dependencies FIRST
+# This leverages Docker's layer caching. The install step only re-runs if requirements.txt changes.
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 6. Copy the rest of your application code into the container
+COPY . .
+
+# 7. Expose the port the app runs on (for Gunicorn in production)
+EXPOSE 5000

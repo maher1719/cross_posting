@@ -1,0 +1,64 @@
+# docker-compose.yml
+
+services:
+  # 1. Backend API Service (Flask)
+  backend:
+    build: ./backend
+    command: flask run --host=0.0.0.0 --port=5000
+    volumes:
+      - ./backend:/usr/src/app # Live-reloading: syncs local code with container
+    ports:
+      - "5001:5000" # Expose container port 5000 to host port 5001
+    env_file:
+      - ./.env
+    environment: # <-- ADD THIS SECTION
+      - PYTHONPATH=.
+    depends_on:
+      - db
+      - broker
+
+  # 2. Database Service (PostgreSQL)
+  db:
+    image: postgres:18.0-alpine3.22 # Use official Postgres image
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/ # Persist data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+
+  # 3. Message Broker Service (Redis)
+  broker:
+    image: redis:alpine3.22 # Use official Redis image
+    ports:
+      - "6379:6379"
+
+  # 4. Background Worker Service (Celery)
+  worker:
+    build: ./backend # Uses the SAME image as the backend
+    command: celery -A celery_worker.celery worker --loglevel=info
+    volumes:
+      - ./backend:/usr/src/app # Also needs live-reloading
+    env_file:
+      - ./.env
+    depends_on:
+      - broker
+      - db
+
+  # 5. Frontend Service (React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app # Live-reloading for React
+      - /app/node_modules # Important: prevents local node_modules from overwriting container's
+    ports:
+      - "3000:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Helps with hot-reloading in some Docker setups
+
+volumes:
+  postgres_data: # Defines the named volume for data persistence

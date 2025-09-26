@@ -1,0 +1,44 @@
+
+# .gitignore in the project root
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.*
+.posting
+# Python virtual environment (if you were using one locally)
+# Though we use Docker, it's good practice to keep this
+backend/venv/
+
+# Node dependencies
+frontend/node_modules/
+mobile/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build directories
+frontend/build/
+frontend/.next/ # If you ever use Next.js
+
+# IDE and OS files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
+node_modules
+# Mobile specific
+mobile/ios/build/
+mobile/android/build/
+mobile/android/app/build/
+mobile/.vscode/
+
