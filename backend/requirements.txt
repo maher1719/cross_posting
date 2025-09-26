@@ -7,4 +7,7 @@ Pillow
 celery
 redis
 gunicorn
+pydantic
+passlib
+pydantic[email]
 pytest-flask

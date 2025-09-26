@@ -2,32 +2,41 @@
 
 from flask import Flask
 from config import Config
-from .core.db import db, migrate # Use relative import
-from .core.celery_utils import make_celery # Use relative import
+from .core.db import db, migrate
+from .core.celery_utils import make_celery
 
 def create_app(config_class=Config):
+    """
+    The application factory. This function builds the Flask app object.
+    """
     app = Flask(__name__)
+    
+    # 1. Load configuration from the 'config.py' file and .env variables
     app.config.from_object(config_class)
 
-    # Initialize extensions
+    # 2. Initialize Flask extensions
+    # These objects are created in /core but are "bound" to our app here.
     db.init_app(app)
     migrate.init_app(app, db)
     
-    # We don't need a global celery_app here anymore.
-    # The celery instance will be created and attached to the app context.
+    # The Celery instance is not created here directly, but the factory
+    # to create it is available for our celery_worker.py entrypoint.
 
-    # Register blueprints
-    from .api.post_routes import posts_bp # Use relative import
+    # 3. Register Blueprints
+    # This is how we connect our modular route files to the main app.
+    from .api.post_routes import posts_bp
     app.register_blueprint(posts_bp, url_prefix='/api/posts')
 
-    from .api.auth_routes import auth_bp # Use relative import
+    from .api.auth_routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
+
+    from .api.user_routes import user_bp
+    app.register_blueprint(user_bp, url_prefix='/api/users')
     
-    # This context is still good for ensuring models are found by Flask-Migrate
+    # 4. Ensure models are discovered by Flask-Migrate
+    # This 'with' block ensures that when we run 'flask db migrate',
+    # SQLAlchemy knows about all the classes defined in our model files.
     with app.app_context():
         from .models import user_model, post_model
 
     return app
-
-# We need a new way to get the celery instance for our worker.
-# We will create a separate entry point for Celery.
