@@ -3,7 +3,7 @@
 from flask import Flask
 from config import Config
 from .core.db import db, migrate
-from .core.celery_utils import make_celery
+from .core.celery_utils import celery_app, make_celery
 
 def create_app(config_class=Config):
     """
@@ -21,7 +21,7 @@ def create_app(config_class=Config):
     
     # The Celery instance is not created here directly, but the factory
     # to create it is available for our celery_worker.py entrypoint.
-
+    make_celery(app)
     # 3. Register Blueprints
     # This is how we connect our modular route files to the main app.
     from .api.post_routes import posts_bp

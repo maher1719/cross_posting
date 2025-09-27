@@ -33,7 +33,7 @@ def create_post():
     except ValidationError as e:
         return jsonify({"error": "Invalid input", "details": e.errors()}), 400
     except Exception as e:
-        return jsonify({"error": "An unexpected error occurred"}), 500
+        return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
 @posts_bp.route('/<int:post_id>', methods=['GET'])
 def get_post(post_id):
