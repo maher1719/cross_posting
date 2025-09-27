@@ -16,7 +16,6 @@ class PostDisplay(PostBase):
     model_config = ConfigDict(from_attributes=True)
 class PostUpdate(PostBase):
     id: int
-    content: str
 
 
 class PostDelete(BaseModel):

@@ -20,7 +20,7 @@ class PostRepository:
     def get_by_id(self, post_id: int) -> Post | None:
         return db.session.get(Post, post_id)
     
-    def delete_by_id(self, post_id: int) -> None:
+    def delete_post_by_id(self, post_id: int) -> None:
         post = self.get_by_id(post_id)
         if post:
             db.session.delete(post)
@@ -35,11 +35,12 @@ class PostRepository:
         db.session.commit()
         return True
 
-    def update(self, post_id: int, content: str) -> Post:
-        post = self.get_by_id(post_id)
+    def update(self, id: int, content: str) -> bool:
+        post = self.get_by_id(id)
+        print("this pos"+post.content)
         if post:
             post.content = content
             db.session.commit()
-            return post
-        return None
+            return True
+        return False
 

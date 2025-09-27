@@ -35,5 +35,16 @@ class PostUseCases:
             return PostDisplay.from_orm(post_model)
         else:
             return None
+    def delete_by_id(self, post_id: int) -> bool:
+        return self.post_repo.delete_post_by_id(post_id)
+    
+    def delete_by_user_id(self, user_id: int) -> bool:
+        return self.post_repo.delete_by_user_id(user_id)
+    
+    def update(self, id: int, content: str) -> bool:
+        post_model = self.post_repo.update(id, content) 
+        return post_model
+        
+
 
     

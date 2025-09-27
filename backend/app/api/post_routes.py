@@ -2,7 +2,7 @@
 
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
-from app.domain.post import PostCreate
+from app.domain.post import PostCreate, PostDisplay, PostUpdate, PostDelete, PostUsetDelete
 from app.use_cases.post_use_cases import PostUseCases
 from app.repositories.post_repository import PostRepository
 
@@ -59,7 +59,7 @@ def get_post(post_id):
 
 
 @posts_bp.route('/<int:post_id>', methods=['DELETE'])
-def delete_post(post_id):
+def delete_post_by_id(post_id):
     try:
         post = post_use_cases.delete_by_id(post_id)
         if post:
@@ -89,17 +89,20 @@ def delete_posts_by_user_id(user_id):
 
 
 
-@posts_bp.route('/<int:post_id>', methods=['PUT'])
-def update_post(post_id, content):
+@posts_bp.route('/', methods=['Patch'])
+def update_post():
     try:
-        post = post_use_cases.update(post_id, content)
+        post_data = PostUpdate(**request.json)
+        print(post_data)
+        post = post_use_cases.update(post_data.id, post_data.content)
         if post:
-            return jsonify(post.dict()), 200
+            return jsonify({"message": "Post updated successfully"}), 200
         else:
             return jsonify({"error": "Post not found"}), 404
     except ValidationError as e:
         return jsonify({"error": "Invalid input", "details": e.errors()}), 400
     except Exception as e:
+        print(request.json)
         return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
         

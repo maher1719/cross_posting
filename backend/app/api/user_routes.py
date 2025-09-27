@@ -39,4 +39,4 @@ def register_user():
         # -----------------------------------------
         
         # Handle unexpected errors
-        return jsonify({"error": "An unexpected error occurred"}), 500
+        return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
