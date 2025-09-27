@@ -1,0 +1,26 @@
+from app.repositories.post_repository import PostRepository
+from app.domain.post import PostCreate, PostDisplay
+from app.models.post_model import Post
+
+
+class PostUseCases:
+    def __init__(self, post_repo: PostRepository):
+        self.post_repo = post_repo
+
+    def get_all_posts(self) -> list[PostDisplay]:
+         post_models = self.post_repo.get_all()
+        # Convert SQLAlchemy models to Pydantic models for the API layer
+         return [PostDisplay.from_orm(post) for post in post_models]
+
+    def create_post(self, post_create: PostCreate) -> Post:
+        post_model = self.post_repo.add(post_create)
+        # Convert the new SQLAlchemy model to a Pydantic model
+        return PostDisplay.from_orm(post_model)
+    def get_by_id(self, post_id: int) -> PostDisplay | None:
+        post_model = self.post_repo.get_by_id(post_id)
+        if post_model:
+            return PostDisplay.from_orm(post_model)
+        else:
+            return None
+
+    
