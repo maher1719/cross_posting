@@ -14,6 +14,8 @@ post_repo = PostRepository()
 post_use_cases = PostUseCases(post_repo)
 
 
+
+
 @posts_bp.route('/', methods=['GET'])
 def get_posts():
     try:
@@ -23,6 +25,9 @@ def get_posts():
         return jsonify({"error": "Invalid input", "details": e.errors()}), 400
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred"}), 500
+
+
+
 
 @posts_bp.route('/', methods=['POST'])
 def create_post():
@@ -34,6 +39,8 @@ def create_post():
         return jsonify({"error": "Invalid input", "details": e.errors()}), 400
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
+
+
 
 @posts_bp.route('/<int:post_id>', methods=['GET'])
 def get_post(post_id):
@@ -49,6 +56,8 @@ def get_post(post_id):
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
+
+
 @posts_bp.route('/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
     try:
@@ -62,6 +71,10 @@ def delete_post(post_id):
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
+
+
+
+@posts_bp.route('/user/<int:user_id>', methods=['DELETE'])
 def delete_posts_by_user_id(user_id):
     try:
         post = post_use_cases.delete_by_user_id(user_id)
@@ -74,6 +87,9 @@ def delete_posts_by_user_id(user_id):
     except Exception as e:
         return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
+
+
+@posts_bp.route('/<int:post_id>', methods=['PUT'])
 def update_post(post_id, content):
     try:
         post = post_use_cases.update(post_id, content)
