@@ -14,3 +14,13 @@ class PostDisplay(PostBase):
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+class PostUpdate(PostBase):
+    id: int
+    content: str
+
+
+class PostDelete(BaseModel):
+    id: int
+
+class PostUsetDelete(BaseModel):
+    user_id: int

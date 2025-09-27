@@ -19,3 +19,27 @@ class PostRepository:
 
     def get_by_id(self, post_id: int) -> Post | None:
         return db.session.get(Post, post_id)
+    
+    def delete_by_id(self, post_id: int) -> None:
+        post = self.get_by_id(post_id)
+        if post:
+            db.session.delete(post)
+            db.session.commit()
+            return True
+        return False
+    
+    def delete_by_user_id(self, user_id: int) -> None:
+        posts = Post.query.filter_by(user_id=user_id).all()
+        for post in posts:
+            db.session.delete(post)
+        db.session.commit()
+        return True
+
+    def update(self, post_id: int, content: str) -> Post:
+        post = self.get_by_id(post_id)
+        if post:
+            post.content = content
+            db.session.commit()
+            return post
+        return None
+
