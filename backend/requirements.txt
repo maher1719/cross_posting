@@ -11,3 +11,5 @@ pydantic
 passlib
 pydantic[email]
 pytest-flask
+Flask-CORS
+Flask-JWT

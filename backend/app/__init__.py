@@ -2,6 +2,7 @@
 
 from flask import Flask
 from config import Config
+from flask_cors import CORS
 from .core.db import db, migrate
 from .core.celery_utils import celery_app, make_celery
 
@@ -13,7 +14,7 @@ def create_app(config_class=Config):
     
     # 1. Load configuration from the 'config.py' file and .env variables
     app.config.from_object(config_class)
-
+    CORS(app) 
     # 2. Initialize Flask extensions
     # These objects are created in /core but are "bound" to our app here.
     db.init_app(app)

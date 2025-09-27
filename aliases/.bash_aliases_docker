@@ -1,0 +1,61 @@
+
+# --- Docker Compose Aliases ---
+
+# Start everything up in the background (detached mode) and build if needed.
+# This will be your most used command.
+alias dc='docker compose'
+alias dcup='dc up -d --build'
+
+# Stop and remove all containers for this project.
+alias dcdown='dc down'
+
+
+# Restart all containers
+alias dcrestart='dcdown && dcup'
+
+# Restart with build
+alias dcreb='dcdown && dcup --build -d'
+
+# Stop, remove containers AND volumes (the "nuke" option for a fresh start).
+# Use with caution!
+alias dcnuke='dc down -v'
+
+# View the logs of all services, streaming in real-time.
+alias dclogs='dc logs -f'
+
+# View the logs of a specific service (e.g., dclog worker).
+# Note: This is a function to allow passing an argument.
+dclog() {
+    dc logs -f "$1"
+}
+
+# Execute a command inside a running container.
+# e.g., dcexec backend bash
+dcexec() {
+    dc exec "$@"
+}
+
+# Get a shell inside the backend container.
+alias dcbash='dc exec backend bash'
+
+# Get a shell inside the worker container for debugging.
+alias dcwbash='dc exec worker bash'
+
+# List running containers for this project.
+alias dcps='dc ps'
+
+
+# --- Flask Database Migration Aliases ---
+# These run inside the backend container.
+
+# Generate a new migration script.
+# e.g., migrate "add posts table"
+migrate() {
+    dc exec backend flask db migrate -m "$1"
+}
+
+# Apply the latest migration to the database.
+alias upgrade='dc exec backend flask db upgrade'
+
+# Roll back the last migration.
+alias downgrade='dc exec backend flask db downgrade'
