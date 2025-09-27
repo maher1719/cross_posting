@@ -35,7 +35,7 @@ def register_user():
     except Exception as e:
         # --- ADD THESE TWO LINES FOR DEBUGGING ---
         print("--- AN UNEXPECTED ERROR OCCURRED ---")
-        traceback.print_exc()
+        #traceback.print_exc()
         # -----------------------------------------
         
         # Handle unexpected errors
