@@ -1,8 +1,8 @@
-# NEW, CORRECTED VERSION
-from app.models.post_model import Post
-from app.domain.post import PostCreate
-from app.core.db import db
+# backend/app/repositories/post_repository.py
 
+from app.models.post_model import Post
+from app.domain.post import PostCreate, PostUpdate # --- ENHANCEMENT: Import PostUpdate ---
+from app.core.db import db
 
 class PostRepository:
     def get_all(self) -> list[Post]:
@@ -20,7 +20,7 @@ class PostRepository:
     def get_by_id(self, post_id: int) -> Post | None:
         return db.session.get(Post, post_id)
     
-    def delete_post_by_id(self, post_id: int) -> None:
+    def delete_by_id(self, post_id: int) -> bool:
         post = self.get_by_id(post_id)
         if post:
             db.session.delete(post)
@@ -28,19 +28,17 @@ class PostRepository:
             return True
         return False
     
-    def delete_by_user_id(self, user_id: int) -> None:
-        posts = Post.query.filter_by(user_id=user_id).all()
-        for post in posts:
-            db.session.delete(post)
+    def delete_by_user_id(self, user_id: int) -> int:
+        # --- ENHANCEMENT: This method is more powerful if it returns how many posts were deleted ---
+        num_deleted = Post.query.filter_by(user_id=user_id).delete()
         db.session.commit()
-        return True
+        return num_deleted
 
-    def update(self, id: int, content: str) -> bool:
-        post = self.get_by_id(id)
-        print("this pos"+post.content)
+    def update(self, post_update: PostUpdate) -> Post | None:
+        # --- ENHANCEMENT: Accept the Pydantic model directly for consistency ---
+        post = self.get_by_id(post_update.id)
         if post:
-            post.content = content
+            post.content = post_update.content
             db.session.commit()
-            return True
-        return False
-
+            return post
+        return None
