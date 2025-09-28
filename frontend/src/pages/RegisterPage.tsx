@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../api/userApi';
+import React from 'react';
+// --- 1. IMPORT YOUR NEW CUSTOM HOOK ---
+import { useRegisterForm } from '../hooks/useRegisterForm'; 
 
 // A reusable Form Input component to keep our form clean
 interface FormInputProps {
@@ -32,28 +32,21 @@ const FormInput: React.FC<FormInputProps> = ({ id, label, type, value, onChange 
 );
 
 
+// --- THIS IS YOUR NEW, CLEAN COMPONENT ---
 export const RegisterPage = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // For loading state
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      await registerUser({ username, email, password });
-      navigate('/login');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'An unknown error occurred.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // 2. Call the hook to get all the logic and state.
+  //    We "destructure" the object that the hook returns.
+  const {
+    username,
+    setUsername,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    error,
+    isLoading,
+    handleSubmit,
+  } = useRegisterForm();
 
   return (
     <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
