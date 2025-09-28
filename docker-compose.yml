@@ -47,7 +47,7 @@ services:
       - broker
       - db
 
-  # 5. Frontend Service (React)
+  #5. Frontend Service (React)
   frontend:
     build:
       context: ./frontend

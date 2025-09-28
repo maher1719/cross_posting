@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED 1
 # 5. Copy requirements file and install dependencies FIRST
 # This leverages Docker's layer caching. The install step only re-runs if requirements.txt changes.
 COPY ./requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # 6. Copy the rest of your application code into the container
 COPY . .
