@@ -52,9 +52,9 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       console.log('Unauthorized request. Logging out...');
       // Clear the token from the store to log the user out.
-      useAuthStore.getState().setToken(null);
+      useAuthStore.getState().logout();
       // Optional: Redirect to the login page
-      // window.location.href = '/login';
+      window.location.href = '/login';
     }
 
     // Return the error to be handled by the specific API call's catch block.

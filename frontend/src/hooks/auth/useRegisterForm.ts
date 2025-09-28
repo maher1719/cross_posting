@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../api/userApi';
+import { registerUser } from '../../api/userApi';
 
 export const useRegisterForm = () => {
   // 1. All the state management lives here now.
@@ -20,8 +20,9 @@ export const useRegisterForm = () => {
     setIsLoading(true);
 
     try {
-      await registerUser({ username, email, password });
+      const result=await registerUser({ username, email, password });
       // On success, redirect the user to the login page
+      console.log(result);
       navigate('/login');
     } catch (err: any) {
       setError(err.response?.data?.error || 'An unknown error occurred.');

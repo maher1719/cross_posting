@@ -1,3 +1,4 @@
+// frontend/src/store/authStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -5,7 +6,9 @@ interface AuthState {
     token: string | null;
     // You can add user info here as well
     // user: User | null;
-    setToken: (token: string | null) => void;
+    isAuthenticated: boolean;
+    login: (token: string) => void;
+    logout: () => void;
     // setUser: (user: User | null) => void;
 }
 
@@ -14,11 +17,14 @@ export const useAuthStore = create<AuthState>()(
         (set) => ({
             token: null,
             // user: null,
-            setToken: (token) => set({ token }),
+            isAuthenticated: false,
+            login: (token) => set({ token, isAuthenticated: true }),
+            logout: () => set({ token: null, isAuthenticated: false }),
             // setUser: (user) => set({ user }),
         }),
         {
             name: 'auth-storage', // Name for the localStorage key
+            
         }
     )
 );

@@ -1,6 +1,5 @@
 import React from 'react';
-// --- 1. IMPORT YOUR NEW CUSTOM HOOK ---
-import { useRegisterForm } from '../hooks/useRegisterForm'; 
+import { useRegisterForm } from '../hooks/auth/useRegisterForm'; 
 
 // A reusable Form Input component to keep our form clean
 interface FormInputProps {
