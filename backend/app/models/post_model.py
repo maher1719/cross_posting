@@ -1,15 +1,28 @@
 # backend/app/models/post_model.py
-
-from app.core.db import db
+import uuid
 import datetime
+from sqlalchemy import Text, String
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+from app.core.db import db
 
 # Add a basic Post model for future use
 class Post(db.Model):
     __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),  # Use the UUID type from your dialect
+        primary_key=True,
+        default=uuid.uuid4)
+    content: Mapped[str] = mapped_column(
+        Text, 
+        nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True), 
+        db.ForeignKey('users.id'), 
+        nullable=False)
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        db.DateTime, 
+        default=datetime.datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('posts', lazy=True))
 
