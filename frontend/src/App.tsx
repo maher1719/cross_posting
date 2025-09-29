@@ -30,9 +30,13 @@ function App() {
                       to="/"
                       className="text-gray-500 hover:bg-slate-200 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium"
                     >
-
-                    
                     Home
+                  </Link>
+                  <Link
+                      to="/"
+                      className="text-gray-500 hover:bg-slate-200 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium"
+                    >
+                    Logout
                   </Link>
                   </>
                     ):(
