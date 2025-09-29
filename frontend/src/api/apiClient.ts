@@ -33,6 +33,7 @@ apiClient.interceptors.request.use(
   },
   (error) => {
     // Handle any errors that happen during the request setup.
+    console.log(error)
     return Promise.reject(error);
   }
 );

@@ -28,7 +28,7 @@ def register_user():
 
     except ValidationError as e:
         # Handle Pydantic validation errors
-        return jsonify({"error": "Invalid input", "details": e.errors()}), 400
+        return jsonify({"error": "Invalid input", "details": e.__str__}), 400
     except ValueError as e:
         # Handle business logic errors (e.g., email exists)
         return jsonify({"error": str(e)}), 409 # 409 Conflict
