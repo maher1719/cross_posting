@@ -4,6 +4,7 @@ from app.models.post_model import Post
 from app.domain.post import PostCreate, PostUpdate # --- ENHANCEMENT: Import PostUpdate ---
 from app.core.db import db
 
+
 class PostRepository:
     def get_all(self) -> list[Post]:
         return Post.query.all()
