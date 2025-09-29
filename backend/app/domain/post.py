@@ -15,6 +15,7 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     user_id: int = Field(..., gt=0, description="The ID of the user creating the post")
 
+
 # --- Data structure for updating an existing post ---
 class PostUpdate(PostId, PostBase):
     # This class now inherits both 'id' and 'content'
