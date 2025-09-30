@@ -7,6 +7,7 @@ from app.domain.user import UserCreate, UserDisplay, UserLogin
 # Setup password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 class UserUseCases:
     def __init__(self, user_repo: UserRepository):
         self.user_repo = user_repo
@@ -15,7 +16,9 @@ class UserUseCases:
         # Business Rule: Check if user already exists
         existing_user = self.user_repo.get_by_email(user_create.email)
         if existing_user:
-            raise ValueError("Email already registered") # We'll handle this in the API layer
+            raise ValueError(
+                "Email already registered"
+            )  # We'll handle this in the API layer
 
         # Hash the password
         hashed_password = pwd_context.hash(user_create.password)
@@ -25,15 +28,17 @@ class UserUseCases:
 
         # Convert the SQLAlchemy model to a Pydantic display model
         return UserDisplay.from_orm(new_user_model)
-    
 
-    def verify_login_user(self, user_login: UserLogin) -> UserDisplay | None:
-        user = self.user_repo.get_by_email(user_login.email)
-        print(user.email)
-        if not user:
-            return {"error": "Invalid email or password"}
-        hashed_passowrd = pwd_context.hash(user_login.password)
-        verify_login= self.user_repo.login_user(user, hashed_passowrd)
-        if not verify_login:
-            return {"error": "Invalid email or password"}
-        return UserDisplay.from_orm(user)
+    def login_user(self, user_login: UserLogin) -> User | None:
+        """
+        Handles the core logic of user authentication.
+        Returns the User model on success, None on failure.
+        """
+        user_model = self.user_repo.get_by_email(user_login.email)
+        if not user_model:
+            return None
+        passowrd_hashed = pwd_context.hash(user_login.password)
+        if not pwd_context.verify(passowrd_hashed, user_model.hashed_password):
+            return None
+
+        return user_model

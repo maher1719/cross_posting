@@ -27,12 +27,5 @@ class UserRepository:
         return User.query.filter_by(email=email).first()
 
 
-#TODO fix to return error invalid
-    def login_user(self, user_login: UserLogin, hashed_passowrd:str) -> User | None:
-        user = self.get_by_email(user_login.email)
-        if not user:
-            return {"error": "Invalid email or password"}
-        print(user)
-        if user and pwd_context.verify(hashed_passowrd, user.hashed_password):
-            return user
-        return {"error": "Invalid email or password"}
+    def get_by_id(self, user_id: uuid.UUID) -> User | None:
+        return db.session.get(User, user_id)

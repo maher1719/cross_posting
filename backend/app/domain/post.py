@@ -1,28 +1,28 @@
 # backend/app/domain/post.py
 
 from pydantic import BaseModel, ConfigDict, Field
-from uuid import uuid4
 from datetime import datetime
+from uuid import uuid4
 
-# --- ENHANCEMENT: Added a base class for models that have an ID ---
-class PostId(BaseModel):
-    id: uuid4 
-# --- Properties that are shared by all Post models ---
+# --- A base model for any entity that has a UUID ---
+class UUIDModel(BaseModel):
+    id: uuid4
+
+# --- Base properties for a post ---
 class PostBase(BaseModel):
-    content: str = Field(..., min_length=1, description="The content of the post")
+    content: str = Field(..., min_length=1, description="The content of the post.")
 
-# --- Data required to create a new post ---
+# --- DTO for creating a new post ---
 class PostCreate(PostBase):
-    user_id: uuid4 
+    user_id: uuid4
 
-# --- Data structure for updating an existing post ---
-class PostUpdate(PostId, PostBase):
-    # This class now inherits both 'id' and 'content'
-    pass
+# --- DTO for updating a post ---
+class PostUpdate(PostBase):
+    pass # For a PATCH, we only need the content. The ID comes from the URL.
 
-# --- Data structure for returning a post to the client ---
-class PostDisplay(PostId, PostCreate):
-    # Inherits id, content, and user_id
+# --- DTO for displaying a post to the client ---
+class PostDisplay(UUIDModel, PostBase):
+    user_id: uuid4
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)

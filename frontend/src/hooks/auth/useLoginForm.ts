@@ -24,6 +24,7 @@ export const useLoginForm = () => {
       
       if (response.access_token) {
         useAuthStore.getState().login(response.access_token);
+        console.log(response.access_token)
         navigate('/home');
       }
       

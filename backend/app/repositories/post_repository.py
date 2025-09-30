@@ -1,45 +1,33 @@
-# backend/app/repositories/post_repository.py
+# backend/app/use_cases/post_use_cases.py
 
-from app.models.post_model import Post
-from app.domain.post import PostCreate, PostUpdate # --- ENHANCEMENT: Import PostUpdate ---
-from app.core.db import db
+from app.helpers.crud import CRUDUseCases
+from app.repositories.post_repository import post_repository, PostRepository
+from app.domain.post import PostCreate, PostUpdate, PostDisplay
+from app.tasks.posting_tasks import post_to_social_media
+from uuid import uuid4
 
+# --- 1. Inherit from the generic CRUDUseCases ---
+class PostUseCases(CRUDUseCases[PostRepository, PostCreate, PostUpdate, PostDisplay]):
+    def __init__(self, repository: PostRepository):
+        super().__init__(repository)
 
-class PostRepository:
-    def get_all(self) -> list[Post]:
-        return Post.query.all()
+    # --- 2. OVERRIDE the 'create' method to add your specific business logic ---
+    def create(self, *, obj_in: PostCreate) -> PostDisplay:
+        # First, call the base 'create' method to save the post to the DB
+        new_post_display = super().create(obj_in=obj_in)
+        
+        # Now, add your unique business logic for posts
+        print(f"Delegating post creation for Post ID: {new_post_display.id} to Celery.")
+        post_to_social_media.delay(new_post_display.id, new_post_display.content)
+        
+        return new_post_display
 
-    def add(self, post_create: PostCreate) -> Post:
-        new_post = Post(
-            content=post_create.content,
-            user_id=post_create.user_id
-        )
-        db.session.add(new_post)
-        db.session.commit()
-        return new_post
+    # --- 3. Add any custom methods that are NOT standard CRUD ---
+    def delete_posts_by_user(self, user_id: uuid4) -> int:
+        # This is a custom method, so we add it here.
+        # It assumes you'd add a `delete_by_user_id` method to your repository.
+        return self.repository.delete_by_user_id(user_id=user_id)
+        
 
-    def get_by_id(self, post_id: int) -> Post | None:
-        return db.session.get(Post, post_id)
-    
-    def delete_by_id(self, post_id: int) -> bool:
-        post = self.get_by_id(post_id)
-        if post:
-            db.session.delete(post)
-            db.session.commit()
-            return True
-        return False
-    
-    def delete_by_user_id(self, user_id: int) -> int:
-        # --- ENHANCEMENT: This method is more powerful if it returns how many posts were deleted ---
-        num_deleted = Post.query.filter_by(user_id=user_id).delete()
-        db.session.commit()
-        return num_deleted
-
-    def update(self, post_update: PostUpdate) -> Post | None:
-        # --- ENHANCEMENT: Accept the Pydantic model directly for consistency ---
-        post = self.get_by_id(post_update.id)
-        if post:
-            post.content = post_update.content
-            db.session.commit()
-            return post
-        return None
+# --- 4. Export a single, ready-to-use instance ---
+post_use_cases = PostUseCases(post_repository)
