@@ -2,9 +2,11 @@
 
 from app.core.celery_utils import celery_app # Import our celery instance
 import time
+from uuid import uuid4
+
 
 @celery_app.task
-def post_to_social_media(post_id: int, content: str):
+def post_to_social_media(post_id: uuid4, content: str):
     """
     This is our main posting service task.
     It takes a post ID and its content and sends it to various platforms.

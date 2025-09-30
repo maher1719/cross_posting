@@ -49,5 +49,5 @@ def handle_post(post_id: uuid4):
             return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
     elif request.method == 'DELETE':
-        post_use_cases.delete_by_id(post_id)
+        post_use_cases.delete(id=post_id)
         return '', 204
