@@ -106,4 +106,23 @@ dbdowngrade() {
 }
 
 
+# Function to find and kill whatever is on a specific port
+killport() {
+    if [ -z "$1" ]; then
+        echo "Usage: killport <port_number>"
+        return 1
+    fi
+    
+    PID=$(sudo lsof -t -i :"$1")
+    
+    if [ -n "$PID" ]; then
+        echo "Found process with PID $PID on port $1. Terminating..."
+        sudo kill -9 "$PID"
+        echo "Process terminated."
+    else
+        echo "No process found on port $1."
+    fi
+}
+
+
 echo "Project aliases loaded. You can now use dcup, dcdown, dcrestart, etc."

@@ -1,6 +1,7 @@
 # backend/app/use_cases/user_use_cases.py
 
 from passlib.context import CryptContext
+from app.models.user_model import User
 from app.repositories.user_repository import UserRepository
 from app.domain.user import UserCreate, UserDisplay, UserLogin
 

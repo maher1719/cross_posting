@@ -30,8 +30,8 @@ def register_user():
         return jsonify(new_user.dict()), 201 # 201 Created
 
     except ValidationError as e:
-        # Handle Pydantic validation errors
-        return jsonify({"error": "Invalid input", "details": e.__str__}), 400
+    # Pydantic's e.errors() method gives a clean, structured list of errors
+        return jsonify({"error": "Invalid input", "details": e.errors()}), 400
     except ValueError as e:
         # Handle business logic errors (e.g., email exists)
         return jsonify({"error": str(e)}), 409 # 409 Conflict

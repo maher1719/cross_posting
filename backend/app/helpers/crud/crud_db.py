@@ -11,8 +11,7 @@ from sqlalchemy.orm import DeclarativeBase
 ModelType = TypeVar("ModelType", bound=DeclarativeBase) # For the SQLAlchemy model
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel) # For the Pydantic create schema
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel) # For the Pydantic update schema
-RepoType = TypeVar("RepoType", bound=CRUDBase)
-DisplaySchemaType = TypeVar("DisplaySchemaType", bound=BaseModel)
+
 
 
 # --- 3. MAKE CRUDBase A GENERIC CLASS ---

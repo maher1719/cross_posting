@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from app.domain.post import PostCreate, PostDisplay, PostUpdate
 from app.use_cases.post_use_cases import PostUseCases
 from app.repositories.post_repository import PostRepository
-import uuid # --- Import uuid ---
+from uuid import uuid4 # --- Import uuid ---
 
 posts_bp = Blueprint('posts', __name__)
 
@@ -18,19 +18,19 @@ def handle_posts():
     if request.method == 'POST':
         try:
             post_data = PostCreate(**request.json)
-            new_post = post_use_cases.create_post(post_data)
+            new_post = post_use_cases.create(obj_in=post_data)
             return jsonify(new_post.model_dump()), 201
         except ValidationError as e:
             return jsonify({"error": "Invalid input", "details": e.errors()}), 400
-        except Exception:
-            return jsonify({"error": "An unexpected error occurred"}), 500
+        except Exception as e:
+            return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
     else: # GET
-        posts = post_use_cases.get_all_posts()
+        posts = post_use_cases.get_all()
         return jsonify([post.model_dump() for post in posts])
 
 # --- GET (Single), PATCH (Update), DELETE (Remove) on the ID route ---
 @posts_bp.route('/<uuid:post_id>', methods=['GET', 'PATCH', 'DELETE'])
-def handle_post(post_id: uuid.UUID):
+def handle_post(post_id: uuid4):
     post = post_use_cases.get_by_id(post_id)
     if not post:
         return jsonify({"error": "Post not found"}), 404
@@ -41,12 +41,12 @@ def handle_post(post_id: uuid.UUID):
     elif request.method == 'PATCH':
         try:
             post_update_data = PostUpdate(**request.json)
-            updated_post = post_use_cases.update(post_id, post_update_data)
+            updated_post = post_use_cases.update(id=post_id, obj_in=post_update_data)
             return jsonify(updated_post.model_dump())
         except ValidationError as e:
             return jsonify({"error": "Invalid input", "details": e.errors()}), 400
-        except Exception:
-            return jsonify({"error": "An unexpected error occurred"}), 500
+        except Exception as e:
+            return jsonify({"error": "An unexpected error occurred"+e.__str__()}), 500
 
     elif request.method == 'DELETE':
         post_use_cases.delete_by_id(post_id)

@@ -3,6 +3,7 @@ from passlib.context import CryptContext
 from app.models.user_model import User
 from app.domain.user import UserCreate, UserLogin
 from app.core.db import db
+from uuid import uuid4
 
 # Setup password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -27,5 +28,5 @@ class UserRepository:
         return User.query.filter_by(email=email).first()
 
 
-    def get_by_id(self, user_id: uuid.UUID) -> User | None:
+    def get_by_id(self, user_id: uuid4) -> User | None:
         return db.session.get(User, user_id)
