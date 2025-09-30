@@ -38,6 +38,7 @@ apiClient.interceptors.request.use(
   }
 );
 
+
 // 3. (Optional but recommended) Use an Interceptor to handle responses globally
 // This interceptor runs AFTER a response is received.
 apiClient.interceptors.response.use(
