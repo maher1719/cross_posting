@@ -5,7 +5,8 @@ import type { Post } from '../types'; // Import the Post type
 
 // Define the shape of the data we need to create a post
 export interface PostCreateData {
-  content: string;
+  content_html: string;
+  content_text: string;
   // The user_id will be added on the backend from the token,
   // but let's send it for now until we build that logic.
   user_id: string; // Assuming UUIDs are strings

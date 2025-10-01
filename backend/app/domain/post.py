@@ -11,7 +11,8 @@ class UUIDModel(BaseModel):
 
 # --- Base properties for a post ---
 class PostBase(BaseModel):
-    content: str = Field(..., min_length=1, description="The content of the post.")
+    content_html: str = Field(..., min_length=1, description="The HTML content of the post.")
+    content_text: str = Field(..., min_length=1, description="The plain text content of the post.")
 
 # --- DTO for creating a new post ---
 class PostCreate(PostBase):

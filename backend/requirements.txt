@@ -15,3 +15,4 @@ Flask-CORS
 PyJWT
 graphene-sqlalchemy
 flask-graphql
+tweepy

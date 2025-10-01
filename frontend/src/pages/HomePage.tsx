@@ -1,26 +1,40 @@
 // frontend/src/pages/HomePage.tsx
 
-import React from 'react';
+import { useRef } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { usePostForm } from '../hooks/posts'; // Import our new hook
+import { usePostForm } from '../hooks/posts/usePostsForm';
 
-// A simple loading spinner component for a better UX
 const Spinner = () => (
     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
 );
 
 export const HomePage = () => {
-    // Get all the logic and state from our custom hook
+    // --- THE FIX ---
+    // 1. Create the ref here, in the component that owns the editor.
+    const quillRef = useRef<ReactQuill>(null);
+
+    // 2. The hook is now simple and doesn't need the ref.
     const { content, setContent, error, isLoading, handleSubmit } = usePostForm();
+
+    // 3. Create a new click handler here in the component.
+    const handleCreatePost = () => {
+        // 4. Get the plain text from the editor *right here*.
+        //    We use a check to make sure the ref is connected.
+        const editor = quillRef.current?.getEditor();
+        const contentText = editor ? editor.getText() : '';
+        
+        // 5. Pass the plain text to the hook's handleSubmit function.
+        handleSubmit(contentText);
+    };
 
     return (
         <div className="max-w-4xl mx-auto p-4 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Create a New Post</h1>
             
-            {/* The Rich Text Editor */}
             <div className="mb-4">
                 <ReactQuill 
+                    ref={quillRef} // The ref is attached here
                     theme="snow" 
                     value={content} 
                     onChange={setContent}
@@ -28,26 +42,23 @@ export const HomePage = () => {
                 />
             </div>
 
-            {/* Display any submission errors */}
             {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
                     <span className="block sm:inline">{error}</span>
                 </div>
             )}
 
-            {/* The Submit Button */}
             <div className="flex justify-end">
+                {/* 6. The button now calls our new click handler. */}
                 <button
                     type="button"
-                    onClick={handleSubmit}
+                    onClick={handleCreatePost} 
                     disabled={isLoading}
-                    className="flex items-center justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center rounded-md ..."
                 >
                     {isLoading ? <Spinner /> : 'Create Post'}
                 </button>
             </div>
-
-            {/* Later, you will add a component here to display all existing posts */}
         </div>
     );
 };

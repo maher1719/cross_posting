@@ -20,7 +20,7 @@ class PostUseCases(CRUDUseCases[PostRepository, PostCreate, PostUpdate, PostDisp
 
         # Now, add your unique business logic for posts
         print(f"Delegating post creation for Post ID: {new_post_display.id} to Celery.")
-        post_to_social_media.delay(new_post_display.id, new_post_display.content)
+        post_to_social_media.delay(new_post_display.id, new_post_display.content_text)
 
         return new_post_display
 

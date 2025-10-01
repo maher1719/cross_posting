@@ -33,7 +33,7 @@ def create_crud_blueprint(
                 return jsonify({"error": "Invalid input", "details": e.errors()}), 400
             except Exception as e:
                 # Log the full error in a real app
-                return jsonify({"error": "An internal server error occurred"}), 500
+                return jsonify({"error": "An internal server error occurred", "details": e.__str__()}), 500
         else: # GET
             all_objs = use_cases.get_all()
             return jsonify([obj.model_dump() for obj in all_objs])

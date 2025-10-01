@@ -13,9 +13,9 @@ class Post(db.Model):
         PG_UUID(as_uuid=True),  # Use the UUID type from your dialect
         primary_key=True,
         default=uuid.uuid4)
-    content: Mapped[str] = mapped_column(
-        Text, 
-        nullable=False)
+    content_html: Mapped[str] = mapped_column(Text, nullable=False)
+    # --- ADD THE NEW COLUMN ---
+    content_text: Mapped[str] = mapped_column(Text, nullable=False)
     user_id: Mapped[uuid.UUID] = mapped_column(
         PG_UUID(as_uuid=True), 
         db.ForeignKey('users.id'), 
