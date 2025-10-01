@@ -36,13 +36,14 @@ def login():
         }
         
         secret_key = current_app.config['SECRET_KEY']
-        access_token = jwt.encode(payload, secret_key, algorithm="HS265")
+        access_token = jwt.encode(payload, secret_key, algorithm="HS256")
         
         # 5. Return the token to the client
         return jsonify(Token(access_token=access_token).model_dump())
 
     except ValidationError as e:
         return jsonify({"error": "Invalid input", "details": e.errors()}), 400
-    except Exception:
+    except Exception as e:
         # In a real app, you would log the full error here
-        return jsonify({"error": "An internal server error occurred"}), 500
+        print(e)
+        return jsonify({"error": "An internal server error occurred "+e.__str__()}), 500

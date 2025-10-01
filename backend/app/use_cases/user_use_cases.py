@@ -32,14 +32,19 @@ class UserUseCases:
 
     def login_user(self, user_login: UserLogin) -> User | None:
         """
-        Handles the core logic of user authentication.
-        Returns the User model on success, None on failure.
+        Handles the core business logic of user authentication.
+        It finds a user and verifies their password.
+        Returns the full SQLAlchemy User model on success, or None on failure.
         """
+        # 1. Get the user from the database via the repository
         user_model = self.user_repo.get_by_email(user_login.email)
         if not user_model:
-            return None
-        passowrd_hashed = pwd_context.hash(user_login.password)
-        if not pwd_context.verify(passowrd_hashed, user_model.hashed_password):
-            return None
+            return None # User does not exist
 
+        # 2. THE FIX: Call pwd_context.verify() with the PLAIN TEXT password
+        #    from the login form and the HASHED password from the database.
+        if not pwd_context.verify(user_login.password, user_model.hashed_password):
+            return None # Passwords do not match
+            
+        # 3. If both checks pass, success! Return the full user object.
         return user_model
