@@ -13,3 +13,5 @@ pydantic[email]
 pytest-flask
 Flask-CORS
 PyJWT
+graphene-sqlalchemy
+flask-graphql
