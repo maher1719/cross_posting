@@ -12,8 +12,15 @@ python:
   paths-ignore:
     - 'backend/test'
 
-javascript:
+javascript-typescript:
   paths:
     - 'src/frontend'
   paths-ignore:
     - 'src/frontend/node_modules/'
+
+
+javascript-typescript:
+  paths:
+    - 'src/mobile'
+  paths-ignore:
+    - 'src/mobile/node_modules/'
