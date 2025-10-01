@@ -14,13 +14,9 @@ python:
 
 javascript-typescript:
   paths:
-    - 'src/frontend'
+    - 'src/frontend/'
+    - 'src/mobile/'
   paths-ignore:
     - 'src/frontend/node_modules/'
-
-
-javascript-typescript:
-  paths:
-    - 'src/mobile'
-  paths-ignore:
     - 'src/mobile/node_modules/'
+    
