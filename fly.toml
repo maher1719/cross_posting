@@ -7,7 +7,7 @@ app = 'cross-posting'
 primary_region = 'fra'
 
 [build]
-
+  image = "backend/backend:latest"
 [env]
   PORT = '8080'
 
