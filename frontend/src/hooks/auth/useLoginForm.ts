@@ -8,8 +8,10 @@ export const useLoginForm = () => {
   // 1. All the state management lives here now.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
 
   // 2. The event handler logic lives here.
@@ -19,14 +21,17 @@ export const useLoginForm = () => {
     setIsLoading(true);
 
     try {
-      const response = await loginUser({ email, password });
+
       // On success, redirect the user to the login page
       
-      if (response.access_token) {
-        useAuthStore.getState().login(response.access_token);
-        console.log(response.access_token)
-        navigate('/home');
-      }
+      const responseData = await loginUser({ email, password });
+      
+      // --- THIS IS THE ENHANCEMENT ---
+      // Call the login action with both the token and the user object
+      login(responseData.access_token, responseData.user);
+      console.log(responseData);
+
+      navigate('/');
       
     } catch (err: any) {
       setError(err.response?.data?.error || 'An unknown error occurred.');

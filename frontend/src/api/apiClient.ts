@@ -15,6 +15,25 @@ const apiClient = axios.create({
   },
 });
 
+
+// in frontend/src/api/apiClient.ts
+
+apiClient.interceptors.request.use(
+  (config) => {
+    // 1. Get the token from our Zustand store.
+    const token = useAuthStore.getState().token;
+
+    // 2. If a token exists, add it to the Authorization header.
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // 3. Return the modified config object to be sent.
+    return config;
+  },
+  // ...
+);
+
 // 2. Use an Interceptor to dynamically add the JWT to every request
 // An interceptor is a function that runs BEFORE the request is sent.
 // This is the "magic" that handles authentication for your entire app.

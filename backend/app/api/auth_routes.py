@@ -5,7 +5,7 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from pydantic import ValidationError
 
-from app.domain.user import UserLogin, Token
+from app.domain.user import UserLogin, Token, TokenData, UserDisplay
 from app.use_cases.user_use_cases import UserUseCases
 from app.repositories.user_repository import UserRepository
 
@@ -15,35 +15,39 @@ auth_bp = Blueprint('auth', __name__)
 user_repo = UserRepository()
 user_use_cases = UserUseCases(user_repo)
 
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
-        # 1. Validate incoming JSON against the Pydantic model
         user_login_data = UserLogin(**request.json)
-        
-        # 2. Call the use case to handle all business logic
         verified_user = user_use_cases.login_user(user_login_data)
         
-        # 3. Handle authentication failure
         if not verified_user:
             return jsonify({"error": "Invalid email or password"}), 401
 
-        # 4. If authentication is successful, create the JWT
-        payload = {
-            'sub': str(verified_user.id),  # The "subject" of the token is the user's ID
-            'iat': datetime.now(timezone.utc), # "Issued At" timestamp
-            'exp': datetime.now(timezone.utc) + timedelta(hours=8) # Expiration timestamp
-        }
+        # --- THIS IS THE CORRECTED LOGIC ---
         
+        # 1. Create the JWT payload and encode the token
+        payload = {
+            'sub': str(verified_user.id),
+            'iat': datetime.now(timezone.utc),
+            'exp': datetime.now(timezone.utc) + timedelta(hours=8)
+        }
         secret_key = current_app.config['SECRET_KEY']
         access_token = jwt.encode(payload, secret_key, algorithm="HS256")
         
-        # 5. Return the token to the client
-        return jsonify(Token(access_token=access_token).model_dump())
+        # 2. Create the individual Pydantic model instances
+        token_obj = Token(access_token=access_token)
+        user_display_obj = UserDisplay.from_orm(verified_user)
+        
+        # 3. Combine them into the parent TokenData object
+        token_data_obj = TokenData(token=token_obj, user=user_display_obj)
+        
+        # 4. Return the complete object
+        return jsonify(token_data_obj.model_dump())
 
     except ValidationError as e:
         return jsonify({"error": "Invalid input", "details": e.errors()}), 400
     except Exception as e:
-        # In a real app, you would log the full error here
-        print(e)
-        return jsonify({"error": "An internal server error occurred "+e.__str__()}), 500
+        print(f"--- AN UNEXPECTED ERROR OCCURRED: {e} ---")
+        return jsonify({"error": "An internal server error occurred"}), 500

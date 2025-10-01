@@ -26,6 +26,12 @@ class UserDisplay(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 # --- DTO for the JWT Token response ---
+
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+
+class TokenData(BaseModel):
+    token: Token
+    user: UserDisplay
