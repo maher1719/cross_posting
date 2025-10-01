@@ -1,0 +1,19 @@
+# `paths-ignore` can be defined globally or per-language.
+# It is recommended to define it globally to avoid scanning
+# unwanted files multiple times.
+paths-ignore:
+  - '**/node_modules'
+  - '**/test/**'
+
+# Define path inclusions and exclusions per language
+python:
+  paths:
+    - 'backend/app'
+  paths-ignore:
+    - 'backend/test'
+
+javascript:
+  paths:
+    - 'src/frontend'
+  paths-ignore:
+    - 'src/frontend/node_modules/'
