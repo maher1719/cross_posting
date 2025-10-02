@@ -18,8 +18,6 @@ This is a full-stack application...
 ### **Architectural Blueprint: The "Cross-Posting Platform"**
 
 **Project Version:** 1.0
-**Lead Architect:** Maher Ben Abdessalem
-**Architectural Consultant:** Gemini
 
 ### **1. Core Philosophy: The Pyramid of Stability & Innovation**
 
