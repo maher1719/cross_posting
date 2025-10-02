@@ -36,19 +36,18 @@ def post_to_social_media(self, post_id: int, content: str):
         access_token_secret=access_token_secret)
         
 
-        
-
 
         # 3. Post the tweet!
         print("Posting to X (Twitter)...")
         #response = requests.post(url, json=payload, headers=headers)
         response = client.create_tweet(text=content)
         print("gemini response"+ respone.data)
+        print("gemini response 2"+ respone.json())
         print("...X post successful! Tweet ID:", response)
 
         print(f"--- Finished social media post for Post ID: {post_id} ---")
         return f"Successfully posted to X for Post ID: {post_id}"
 
     except Exception as e:
-        print(f"!!! ERROR posting for Post ID: {post_id} - {e}")
-        raise self.retry(exc=e, countdown=300, max_retries=3)
+        print(f"!!! ERROR posting to X (Twitter) for Post ID: {post_id} - {e}")
+        raise self.retry(exc=e, countdown=300, max_retries=1)
