@@ -41,8 +41,8 @@ def post_to_social_media(self, post_id: int, content: str):
         print("Posting to X (Twitter)...")
         #response = requests.post(url, json=payload, headers=headers)
         response = client.create_tweet(text=content)
-        print("gemini response"+ respone.data)
-        print("gemini response 2"+ respone.json())
+        print("gemini response"+ response.data)
+        print("gemini response 2"+ response.json())
         print("...X post successful! Tweet ID:", response)
 
         print(f"--- Finished social media post for Post ID: {post_id} ---")
