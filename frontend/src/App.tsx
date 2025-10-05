@@ -4,9 +4,10 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { useAuthStore } from './store/authStore';
 
+
 function App() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const logout = useAuthStore((state) => state.logout);
+  const isAuthenticated = useAuthStore((state: { isAuthenticated: any; }) => state.isAuthenticated);
+  const logout = useAuthStore((state: { logout: any; }) => state.logout);
 
   return (
     <Router>
