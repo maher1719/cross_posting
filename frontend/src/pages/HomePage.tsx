@@ -13,9 +13,17 @@ export const HomePage = () => {
     // --- THE FIX ---
     // 1. Create the ref here, in the component that owns the editor.
     const quillRef = useRef<ReactQuill>(null);
-
+     const { 
+      content, 
+      setContent, 
+      generateForTwitter, // <-- ADD THIS
+      setGenerateForTwitter, // <-- AND THIS
+      error, 
+      isLoading, 
+      handleSubmit 
+    } = usePostForm();
     // 2. The hook is now simple and doesn't need the ref.
-    const { content, setContent, error, isLoading, handleSubmit } = usePostForm();
+    //const { content, setContent, error, isLoading, handleSubmit } = usePostForm();
 
     // 3. Create a new click handler here in the component.
     const handleCreatePost = () => {
@@ -23,20 +31,21 @@ export const HomePage = () => {
         //    We use a check to make sure the ref is connected.
         const editor = quillRef.current?.getEditor();
         const contentText = editor ? editor.getText() : '';
-        
+
         // 5. Pass the plain text to the hook's handleSubmit function.
         handleSubmit(contentText);
     };
+    
 
     return (
         <div className="max-w-4xl mx-auto p-4 bg-white rounded-lg shadow-md">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Create a New Post</h1>
-            
+
             <div className="mb-4">
-                <ReactQuill 
+                <ReactQuill
                     ref={quillRef} // The ref is attached here
-                    theme="snow" 
-                    value={content} 
+                    theme="snow"
+                    value={content}
                     onChange={setContent}
                     className="bg-white"
                 />
@@ -47,12 +56,24 @@ export const HomePage = () => {
                     <span className="block sm:inline">{error}</span>
                 </div>
             )}
+            <div className="flex items-center mb-4">
+                <input
+                    id="twitter-checkbox"
+                    type="checkbox"
+                    checked={generateForTwitter}
+                    onChange={(e) => setGenerateForTwitter(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="twitter-checkbox" className="ml-2 block text-sm text-gray-900">
+                    Generate AI summary for X (Twitter)
+                </label>
+            </div>
 
             <div className="flex justify-end">
                 {/* 6. The button now calls our new click handler. */}
                 <button
                     type="button"
-                    onClick={handleCreatePost} 
+                    onClick={handleCreatePost}
                     disabled={isLoading}
                     className="flex items-center justify-center rounded-md ..."
                 >

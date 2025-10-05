@@ -10,6 +10,7 @@ export const usePostForm = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const currentUser = useAuthStore((state) => state.user);
+  const [generateForTwitter, setGenerateForTwitter] = useState(false);
 
   // --- The submit function now takes the plain text as an argument ---
   const handleSubmit = async (contentText: string) => {
@@ -31,7 +32,8 @@ export const usePostForm = () => {
       await createPost({ 
         content_html: content, 
         content_text: contentText, 
-        user_id: currentUser.id 
+        user_id: currentUser.id,
+        generate_for_twitter: generateForTwitter 
       });
       
       setContent('');
@@ -44,5 +46,5 @@ export const usePostForm = () => {
     }
   };
 
-  return { content, setContent, error, isLoading, handleSubmit };
+  return { content, setContent, generateForTwitter, setGenerateForTwitter, error, isLoading, handleSubmit,  };
 };

@@ -26,7 +26,22 @@ class PostRepository(CRUDBase[Post, PostCreate, PostUpdate]):
     # --------------------------------------------------------------------------
     # The CRUDBase handles the simple cases. Any complex, entity-specific
     # database query logic belongs here.
-    
+    def add(self, post_create: PostCreate) -> Post:
+        """
+        Creates a new Post object, carefully selecting only the fields
+        that belong in the database.
+        """
+        new_post = Post(
+            # Explicitly map the fields that the Post model expects
+            content_html=post_create.content_html,
+            content_text=post_create.content_text,
+            user_id=post_create.user_id
+        )
+        db.session.add(new_post)
+        db.session.commit()
+        db.session.refresh(new_post) # Refresh to get the generated ID and created_at
+        return new_post
+        
     def delete_by_user_id(self, user_id: uuid4) -> int:
         """
         Deletes all posts belonging to a specific user in a single,

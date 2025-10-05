@@ -56,8 +56,8 @@ def create_crud_blueprint(
                 return jsonify(updated_obj.model_dump())
             except ValidationError as e:
                 return jsonify({"error": "Invalid input", "details": e.errors()}), 400
-            except Exception:
-                return jsonify({"error": "An internal server error occurred"}), 500
+            except Exception as e:
+                return jsonify({"error": "An internal server error occurred"+e.__str__()}), 500
 
         elif request.method == 'DELETE':
             success = use_cases.delete(id=obj_id)

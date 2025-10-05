@@ -4,6 +4,7 @@ from app.helpers.crud.crud_use_cases import CRUDUseCases
 from app.repositories.post_repository import post_repository, PostRepository
 from app.domain.post import PostCreate, PostUpdate, PostDisplay
 from app.tasks.posting_tasks import post_to_social_media
+from app.tasks.ai_tasks import generate_twitter_summary
 from uuid import uuid4
 
 
@@ -15,14 +16,17 @@ class PostUseCases(CRUDUseCases[PostRepository, PostCreate, PostUpdate, PostDisp
 
     # --- 2. OVERRIDE the 'create' method to add your specific business logic ---
     def create(self, *, obj_in: PostCreate) -> PostDisplay:
-        # First, call the base 'create' method to save the post to the DB
-        new_post_display = super().create(obj_in=obj_in)
-
-        # Now, add your unique business logic for posts
-        print(f"Delegating post creation for Post ID: {new_post_display.id} to Celery.")
-        post_to_social_media.delay(new_post_display.id, new_post_display.content_text)
-
-        return new_post_display
+        # 1. Call the base 'create' method to synchronously save the post to the DB.
+        db_obj = self.repository.create(obj_in=obj_in)
+        
+        # 2. Check the flag from the API payload.
+        if obj_in.generate_for_twitter:
+            print(f"Orchestrating AI summary for Post ID: {db_obj.id}")
+            # 3. Asynchronously delegate the slow AI work to Celery.
+            generate_twitter_summary.delay(str(db_obj.id), db_obj.content_text)
+        
+        # 4. Immediately return the newly created post data to the user.
+        return PostDisplay.from_orm(db_obj)
 
     # --- 3. Add any custom methods that are NOT standard CRUD ---
     def delete_posts_by_user(self, user_id: uuid4) -> int:

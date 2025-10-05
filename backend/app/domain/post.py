@@ -17,6 +17,7 @@ class PostBase(BaseModel):
 # --- DTO for creating a new post ---
 class PostCreate(PostBase):
     user_id: UUID4
+    generate_for_twitter: bool = False
 
 # --- DTO for updating a post ---
 class PostUpdate(PostBase):

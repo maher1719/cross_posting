@@ -1,7 +1,7 @@
 # backend/app/models/post_model.py
 import uuid
 import datetime
-from sqlalchemy import Text, String
+from sqlalchemy import Text, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from app.core.db import db
@@ -16,6 +16,8 @@ class Post(db.Model):
     content_html: Mapped[str] = mapped_column(Text, nullable=False)
     # --- ADD THE NEW COLUMN ---
     content_text: Mapped[str] = mapped_column(Text, nullable=False)
+    generate_for_twitter: Mapped[bool] = mapped_column(Boolean, server_default="false", nullable=False)
+
     user_id: Mapped[uuid.UUID] = mapped_column(
         PG_UUID(as_uuid=True), 
         db.ForeignKey('users.id'), 

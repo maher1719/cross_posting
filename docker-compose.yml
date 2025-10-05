@@ -75,3 +75,6 @@ services:
 volumes:
   postgres_data: # Defines the named volume for data persistence
   ollama_data: 
+networks:
+  app_network:
+    driver: bridge
