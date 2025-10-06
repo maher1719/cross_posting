@@ -1,80 +1,85 @@
-# docker-compose.yml
-
 services:
-
-
-
-  
-  # 1. Backend API Service (Flask)
   backend:
     build: ./backend
     command: flask run --host=0.0.0.0 --port=5000
     volumes:
-      - ./backend:/usr/src/app # Live-reloading: syncs local code with container
+      - ./backend:/usr/src/app
     ports:
-      - "5001:5000" # Expose container port 5000 to host port 5001
+      - "5001:5000"
     env_file:
       - ./.env
-    environment: # <-- ADD THIS SECTION
+    environment:
       - PYTHONPATH=.
     depends_on:
       - db
       - broker
+    networks:
+      - app_network   
 
-  # 2. Database Service (PostgreSQL)
   db:
-    image: postgres:18.0-alpine3.22 # Use official Postgres image
+    image: postgres:18.0-alpine3.22
     volumes:
-      - postgres_data:/var/lib/postgresql/data/ # Persist data
+      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
       - "5432:5432"
+    networks:
+      - app_network   
 
-  # 3. Message Broker Service (Redis)
   broker:
-    image: redis:alpine3.22 # Use official Redis image
+    image: redis:alpine3.22
     ports:
       - "6379:6379"
+    networks:
+      - app_network   
 
-  # 4. Background Worker Service (Celery)
   worker:
-    build: ./backend # Uses the SAME image as the backend
+    build: ./backend
     command: celery -A celery_worker.celery worker --loglevel=info
     volumes:
-      - ./backend:/usr/src/app # Also needs live-reloading
+      - ./backend:/usr/src/app
     env_file:
       - ./.env
     depends_on:
       - broker
       - db
+      - ollama       
+    networks:
+      - app_network   
 
-  #5. Frontend Service (React)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - ./frontend:/app # Live-reloading for React
-      - /app/node_modules # Important: prevents local node_modules from overwriting container's
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "3001:3000"
     environment:
-      - CHOKIDAR_USEPOLLING=true # Helps with hot-reloading in some Docker setups
-#Ollama and gemma3:270m for post summerizing for twitter 
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - app_network   
+
   ollama:
-        image: ollama/ollama:latest
-        container_name: ollama
-        ports:
-          - "11435:11434"
-        volumes:
-          - ollama_data:/root/.ollama_data
-        restart: unless-stopped
+    image: ollama/ollama:latest
+    container_name: ollama
+    #command: ollama run qwen3:0.6b --host 0.0.0.0 --port 11435
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama 
+    restart: unless-stopped
+    networks:
+      - app_network   
+
 volumes:
-  postgres_data: # Defines the named volume for data persistence
-  ollama_data: 
+  postgres_data:
+  ollama_data:
+
 networks:
   app_network:
     driver: bridge

@@ -5,31 +5,27 @@ import requests
 import json
 import re
 
+
 def call_ollama(prompt: str) -> str:
-    """Helper function to call the Ollama service."""
+    """Helper function to call the Ollama service using the chat endpoint."""
     try:
-        # --- FIX 1: Use the correct '/api/chat' endpoint ---
-        ollama_url = "http://ollama:11434/api/generate"
+        # --- CHANGE 1: THE URL PATH MUST BE '/api/chat' ---
+        ollama_url = "http://ollama:11434/api/chat"
         
-        # --- FIX 2: The payload for the chat endpoint is different ---
-        # It expects a list of "messages"
+        # --- CHANGE 2: THE PAYLOAD MUST USE THE 'messages' STRUCTURE ---
         payload = {
-            "model": "qwen3:0.6", # Or your chosen model
+            "model": "qwen3:0.6b",
             "messages": [
-                {
-                    "role": "user",# your own model name
-                    "content": prompt
-                }
+                { "role": "user", "content": prompt }
             ],
-            "stream": False # Keep this to get the full response at once
+            "stream": False
         }
         
-        response = requests.post(ollama_url, data=json.dumps(payload), timeout=120)
+        response = requests.post(ollama_url, data=json.dumps(payload), timeout=300)
         response.raise_for_status()
         response_data = response.json()
         
-        # --- FIX 3: The response structure is also different ---
-        # The content is inside response['message']['content']
+        # --- CHANGE 3: THE RESPONSE MUST BE PARSED FROM the 'message' object ---
         return response_data.get('message', {}).get('content', '')
 
     except requests.exceptions.RequestException as e:
