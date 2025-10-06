@@ -1,6 +1,7 @@
 # backend/app/tasks/ai_tasks.py
 
 from app.core.celery_utils import celery_app
+from app.tasks.posting_tasks import post_to_social_media
 import requests
 import json
 import re
@@ -50,9 +51,14 @@ def generate_twitter_summary(self, post_id: str, content_text: str):
         # TODO: Save the cleaned_summary to the 'AdaptedPosts' database table
         print(f"Successfully generated summary for Post ID: {post_id}: '{cleaned_summary}'")
         
-        # TODO: Send a WebSocket event to the user to notify them.
+        # --- 2. THIS IS THE FINAL STEP: CHAIN THE NEXT TASK ---
+        # Instead of just returning, we will now call the next task in the chain.
+        print(f"Now, delegating the generated summary to the Twitter posting task...")
+        post_to_social_media.delay(post_id, cleaned_summary)
+        
         
         return cleaned_summary
     except Exception as e:
         print(f"Failed to generate summary for Post ID: {post_id}. Retrying... Error: {e}")
         raise self.retry(exc=e, max_retries=2, countdown=60)
+    
